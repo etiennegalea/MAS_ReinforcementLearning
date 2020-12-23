@@ -3,7 +3,9 @@ class Node:
     node_count = 0
 
     def __init__(self, value=None, depth=0, left=None, right=None):
+        self.id = Node.node_count
         self.value = value
+        self.node_visits = 0
         self.depth = depth
         self.left = left
         self.right = right
