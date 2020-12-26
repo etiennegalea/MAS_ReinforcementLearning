@@ -13,11 +13,25 @@ root_node = bt.init_tree(bt.root)
 bt.dist.sort()
 
 # mcts
-for i in range(0, 100):
-    root_node = bt.mcts(root_node)
+iter = 0
+while not bt.is_terminal(root_node):
+    iter += 1
+    print(f"ITERATION {iter}")
+    for i in range(0, 50):
+        root_node = bt.mcts(root_node)
 
-print(bt.dist)
-print(root_node)
+    print(f"left: {root_node.left.ucb_value}")
+    print(f"right: {root_node.right.ucb_value}")
+
+    if root_node.left.ucb_value > root_node.right.ucb_value:
+        root_node = root_node.left
+    else:
+        root_node = root_node.right
+
+
+
+# print(bt.dist)
+# print(root_node)
 
 # print leaf nodes
 # for n in bt.leaf_nodes:

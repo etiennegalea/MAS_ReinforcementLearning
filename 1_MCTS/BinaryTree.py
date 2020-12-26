@@ -83,8 +83,10 @@ class BinaryTree:
 
         # check if leaf node
         if self.is_terminal(node):
-            print(f"BEST REWARD ---> {node.reward} <---")
-            self.mcts_result = node
+            if self.mcts_result is None or self.mcts_result.reward < node.reward:
+                self.mcts_result = node
+            print(f"BEST REWARD ---> {node.reward} <--- (all time champion: {self.mcts_result.reward})")
+
             return None
 
         leaf_reward = self.simulation(node)
