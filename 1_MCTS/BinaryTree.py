@@ -15,10 +15,11 @@ class BinaryTree:
         self.node_count = 0
         self.leaf_count = 0
         self.depth = depth
-        self.dist = np.random.uniform(0, 100, 2**(self.depth))
+        # self.dist = np.random.uniform(0, 100, 2**(self.depth))
+        self.dist = [3.1763765, 6.45137995, 35.521466, 39.70902457, 42.33910517, 44.9193937, 47.09560518, 53.94400596, 59.71622235, 60.22671614, 61.27048542, 69.17290662, 73.34367438, 73.36675489, 86.49938995, 96.31459823]
         self.dist_size = len(self.dist)
         self.root = n.Node(0)
-        self.c = 2
+        self.c = 0.5
         self.leaf_nodes = []
         print(f"node: {self.node_count} ({self.root.reward})")
 
@@ -28,24 +29,24 @@ class BinaryTree:
 
         if current_depth < self.depth:
             if node.left is None:
-                # self.node_count+=1
+                self.node_count+=1
                 if current_depth+1 == self.depth:
                     node.left = n.Node(self.dist[self.leaf_count])
                     self.leaf_count+=1
-                    self.leaf_nodes.append(node)
+                    self.leaf_nodes.append(node.left)
                 else:
                     node.left = n.Node(0)
-                # print(f"node: {self.node_count} - ({node.left.reward}) - orientation: left :: parent: ({node.id})")
+                print(f"({node.left.id}) reward: ({node.left.reward}) - orientation: left :: parent: ({node.id})")
                 self.init_tree(node.left, current_depth+1)
             if node.right is None:
                 # self.node_count+=1
                 if current_depth+1 == self.depth:
                     node.right = n.Node(self.dist[self.leaf_count])
                     self.leaf_count+=1
-                    self.leaf_nodes.append(node)
+                    self.leaf_nodes.append(node.right)
                 else:
                     node.right = n.Node(0)
-                # print(f"node: {self.node_count} - ({node.right.reward}) - orientation: right :: parent: ({node.id})")
+                print(f"({node.right.id}) reward: {self.node_count} - ({node.right.reward}) - orientation: right :: parent: ({node.id})")
                 self.init_tree(node.right, current_depth+1)
         
         return node
@@ -58,11 +59,12 @@ class BinaryTree:
 
         
     def selection(self, root):
-        result = root
-        while result is not None:
-            result = self.traverse_snowcap(result)
+        # result = root
+        # while result is not None:
+            # root = result
+        self.traverse_snowcap(root)
 
-        return result
+        return root
 
     def traverse_snowcap(self, node, parent_node=None, expanded=False):
         'traverse till the end of snowcap'
@@ -71,8 +73,12 @@ class BinaryTree:
 
         if not expanded:
             if node.left.ucb_value > node.right.ucb_value:
+                if self.is_terminal(node):
+                    return None
                 self.traverse_snowcap(node.left, node)
             elif node.left.ucb_value < node.right.ucb_value:
+                if self.is_terminal(node):
+                    return None
                 self.traverse_snowcap(node.right, node)
             # if both are unexplored (or equal), random choice (rollout)
             elif node.left.ucb_value == node.right.ucb_value:
