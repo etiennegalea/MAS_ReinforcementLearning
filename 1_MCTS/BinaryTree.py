@@ -1,7 +1,5 @@
 import Node as n
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 import random
 
 class BinaryTree:
@@ -15,12 +13,13 @@ class BinaryTree:
         self.node_count = 0
         self.leaf_count = 0
         self.depth = depth
-        # self.dist = np.random.uniform(0, 100, 2**(self.depth))
-        self.dist = [3.1763765, 6.45137995, 35.521466, 39.70902457, 42.33910517, 44.9193937, 47.09560518, 53.94400596, 59.71622235, 60.22671614, 61.27048542, 69.17290662, 73.34367438, 73.36675489, 86.49938995, 96.31459823]
+        self.dist = np.random.uniform(0, 100, 2**(self.depth))
+        # self.dist = [78.67361887, 7.52400306, 58.01587063, 9.90337502, 67.77348939, 34.35443757, 56.10794515, 34.40183307, 41.54818527, 48.09403989, 19.67631428, 87.44082142, 65.28944294, 68.84894015, 90.66995439, 68.06399924, 70.99697988, 16.79216832, 42.89832888, 15.43613952, 81.24332669, 6.88905259, 63.72521265, 42.67526973, 82.21721401, 92.65307152, 65.57717637, 80.05718022, 20.47604328, 14.12911913, 3.90392793, 3.44360129]
         self.dist_size = len(self.dist)
         self.root = n.Node(0)
         self.c = 0.5
         self.leaf_nodes = []
+        self.mcts_result = None
         print(f"node: {self.node_count} ({self.root.reward})")
 
 
@@ -57,11 +56,9 @@ class BinaryTree:
 
         return best_reward_node
 
-        
+    
     def selection(self, root):
-        # result = root
-        # while result is not None:
-            # root = result
+        # TODO: after several iterations a sub-tree must be selected as the new tree (deep copy)
         self.traverse_snowcap(root)
 
         return root
@@ -85,8 +82,9 @@ class BinaryTree:
                 self.traverse_snowcap(self.expansion(node), node, expanded=True)
 
         # check if leaf node
-        if node.left is None and node.right is None:
+        if self.is_terminal(node):
             print(f"BEST REWARD ---> {node.reward} <---")
+            self.mcts_result = node
             return None
 
         leaf_reward = self.simulation(node)
