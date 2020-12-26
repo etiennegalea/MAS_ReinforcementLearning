@@ -25,7 +25,7 @@ class Analytics:
         return
 
     def leaf_node_stats(self):
-        l = len(self.dist)
+        l = len(self.leaf_nodes)
         best_node = self.leaf_nodes[0]
         worst_node = self.leaf_nodes[0]
         rank_result_node =  0
@@ -39,11 +39,12 @@ class Analytics:
 
         # rank result node
         leaves = self.leaf_nodes
-        sorted(leaves, key=lambda x: x.reward, reverse=True)
+        leaves = sorted(leaves, key=lambda x: x.reward)
 
         for i in range(0, l):
-            if self.mcts_result.reward == self.leaf_nodes[i].reward:
-                rank_result_node = i
+            if self.mcts_result.reward == leaves[i].reward:
+                rank_result_node = i+1
 
-        rank_result_node = round((rank_result_node / l), 4) * 100
-        print(f"\nRank of result node: {rank_result_node}% (reward of {self.mcts_result.reward})")
+        print(f"\nRank of result node: {rank_result_node}/{l} ({round((rank_result_node / l)*100, 2)}%) (reward of {self.mcts_result.reward})")
+        print(f"max reward: {best_node.reward}")
+        print(f"min reward: {worst_node.reward}")

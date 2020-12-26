@@ -17,7 +17,7 @@ iter = 0
 while not bt.is_terminal(root_node):
     iter += 1
     print(f"ITERATION {iter}")
-    for i in range(0, 50):
+    for i in range(0, 25):
         root_node = bt.mcts(root_node)
 
     print(f"left: {root_node.left.ucb_value}")
