@@ -13,12 +13,11 @@ dim = 9
     # positive terminal node (green square)
     # INDICES START AT 0
 entities = {
-    'blue': [[2,1], [3,1], [4,1], [5,1], [6,1], [6,2], [6,3], [6,4], [6,5], [1,7], [2,7], [3,7], [4,7]],
+    'blue': [[1,2], [1,3], [1,4], [1,5], [1,6], [2,6], [3,6], [4,6], [5,6], [7,1], [7,2], [7,3], [7,4]],
     'red': [[6,5]],
     'green': [[8,8]]
 }
 
 # creating grid world
-gridworld = rl(entities, dim)
-print(gridworld)
-
+gw = rl(entities, dim)
+gw.print_grid()
