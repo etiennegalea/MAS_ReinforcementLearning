@@ -1,4 +1,5 @@
 from ReinforcementLearning import ReinforcementLearning as rl
+from Agent import Agent
 
 class Main:
     'SARSA and Q-learning'
@@ -6,6 +7,8 @@ class Main:
 
 # length and width of gridworld (assuming square grid so length = width)
 dim = 9
+# where the agent will start from
+spawn = (8,7)
 
 # entities in the grid world:
     # walls (blue squares)
@@ -18,6 +21,11 @@ entities = {
     'green': [[8,8]]
 }
 
+# create agent
+agent = Agent(spawn)
+
 # creating grid world
-gw = rl(entities, dim)
+gw = rl(agent, entities, dim)
 gw.print_grid()
+
+gw.move_agent('right')
