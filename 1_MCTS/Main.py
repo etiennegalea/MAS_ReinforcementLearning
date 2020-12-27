@@ -6,7 +6,7 @@ class Main:
 
 depth = 12
 c_values = [0, 0.01, 0.05, 0.1, 0.5, 1, 2, 5]
-repeats = 1
+repeats = 25
 
 statistics = {}
 

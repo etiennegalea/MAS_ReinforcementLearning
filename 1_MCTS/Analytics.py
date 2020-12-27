@@ -58,6 +58,7 @@ class Analytics:
 
         return rank_percent
 
+    # TODO: violin/box plots
     def create_plots(self, stats):
 
         df = pd.DataFrame()
