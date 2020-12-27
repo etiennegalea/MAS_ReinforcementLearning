@@ -17,7 +17,7 @@ class BinaryTree:
         # self.dist = [78.67361887, 7.52400306, 58.01587063, 9.90337502, 67.77348939, 34.35443757, 56.10794515, 34.40183307, 41.54818527, 48.09403989, 19.67631428, 87.44082142, 65.28944294, 68.84894015, 90.66995439, 68.06399924, 70.99697988, 16.79216832, 42.89832888, 15.43613952, 81.24332669, 6.88905259, 63.72521265, 42.67526973, 82.21721401, 92.65307152, 65.57717637, 80.05718022, 20.47604328, 14.12911913, 3.90392793, 3.44360129]
         self.dist_size = len(self.dist)
         self.root = n.Node(0)
-        self.c = 0.01
+        self.c = 0.05
         self.leaf_nodes = []
         self.mcts_result = None
         print(f"node: {self.node_count} ({self.root.reward})")
@@ -58,8 +58,22 @@ class BinaryTree:
 
     
     def selection(self, root):
-        # TODO: after several iterations a sub-tree must be selected as the new tree (deep copy)
-        self.traverse_snowcap(root)
+        # TODO: after several iterations a sub-tree must be selected as the new tree
+        iter = 0
+        while not self.is_terminal(root):
+            iter += 1
+            print(f"ITERATION {iter}")
+            for i in range(0, 25):
+                root = self.traverse_snowcap(root)
+
+            print(f"left: {root.left.ucb_value}")
+            print(f"right: {root.right.ucb_value}")
+
+            if root.left.ucb_value > root.right.ucb_value:
+                root = root.left
+            else:
+                root = root.right
+
 
         return root
 
@@ -83,8 +97,8 @@ class BinaryTree:
 
         # check if leaf node
         if self.is_terminal(node):
-            if self.mcts_result is None or self.mcts_result.reward < node.reward:
-                self.mcts_result = node
+            # if self.mcts_result is None or self.mcts_result.reward < node.reward:
+            self.mcts_result = node
             print(f"BEST REWARD ---> {node.reward} <--- (all time champion: {self.mcts_result.reward})")
 
             return None
