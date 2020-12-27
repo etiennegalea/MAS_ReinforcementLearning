@@ -11,7 +11,7 @@ class Analytics:
         self.leaf_nodes = bt.leaf_nodes
         self.mcts_result = bt.mcts_result
 
-    def distribution_stats(self):
+    def distribution_stats(self, c):
         l = len(self.dist)
         percent = int(l*0.05)
         
@@ -20,11 +20,12 @@ class Analytics:
         # print(f"\nDistribution bottom 10%:\n{self.dist[0:percent]}")
 
         # plot distribution
+        plt.figure()
         sns.distplot(self.dist)
         plt.xlim(0,100)
         plt.ylabel('Density')
-        plt.savefig('dist_plot.png')
         plt.legend()
+        plt.savefig('./1_MCTS/figs/dist_plot_'+str(c)+'.png')
 
         return
 
@@ -73,5 +74,5 @@ class Analytics:
         plt.xlabel('UCB c value')
         plt.legend()
 
-        plt.savefig('plot.png')
+        plt.savefig('./1_MCTS/figs/c_plot.png')
         plt.show()

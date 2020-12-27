@@ -34,7 +34,7 @@ for c in c_values:
             # print(f"({n.id}) reward: {n.reward} - ucb: {n.ucb_value}")
 
         stats = Analytics(root_node, bt)
-        stats.distribution_stats()
+        stats.distribution_stats(c)
         rank_percent = stats.leaf_node_stats()
 
         statistics[c][i] = rank_percent
