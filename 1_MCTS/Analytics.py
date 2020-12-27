@@ -1,5 +1,6 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 
 class Analytics:
     'Analytics for MCTS algorithm'
@@ -20,7 +21,10 @@ class Analytics:
 
         # plot distribution
         sns.distplot(self.dist)
+        plt.xlim(0,100)
+        plt.ylabel('Density')
         plt.savefig('dist_plot.png')
+        plt.legend()
 
         return
 
@@ -45,6 +49,29 @@ class Analytics:
             if self.mcts_result.reward == leaves[i].reward:
                 rank_result_node = i+1
 
-        print(f"\nRank of result node: {rank_result_node}/{l} ({round((rank_result_node / l)*100, 2)}%) (reward of {self.mcts_result.reward})")
+        rank_percent = round((rank_result_node / l)*100, 2)
+
+        print(f"\nRank of result node: {rank_result_node}/{l} ({rank_percent}%) (reward of {self.mcts_result.reward})")
         print(f"max reward: {best_node.reward}")
         print(f"min reward: {worst_node.reward}")
+
+        return rank_percent
+
+    def create_plots(self, stats):
+
+        df = pd.DataFrame()
+        for c in stats:
+            df = df.append({'c': c, 'max': stats[c]['max'], 'min': stats[c]['min'], 'avg': stats[c]['avg']}, ignore_index=True)
+
+        df_melted = df.melt(id_vars='c')
+
+        plt.figure(figsize=(16,10))
+        sns.barplot(x='c', y='value', hue='variable', data=df_melted)
+
+        plt.ylim(0, 100)
+        plt.ylabel('Reward')
+        plt.xlabel('UCB c value')
+        plt.legend()
+
+        plt.savefig('plot.png')
+        plt.show()

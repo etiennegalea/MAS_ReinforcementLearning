@@ -8,7 +8,7 @@ class BinaryTree:
     randomly distributed between 0 and 100 (use the uniform continuous distribution U (0, 100), so don’t restrict
     yourself to integer values!).'''
 
-    def __init__(self, depth=12, root=None):
+    def __init__(self, depth=12, root=None, c_value=0.05):
         'Use a uniform random distribution of real numbers from U(0,100) to fill in at least till depth level of 12'
         self.node_count = 0
         self.leaf_count = 0
@@ -17,7 +17,7 @@ class BinaryTree:
         # self.dist = [78.67361887, 7.52400306, 58.01587063, 9.90337502, 67.77348939, 34.35443757, 56.10794515, 34.40183307, 41.54818527, 48.09403989, 19.67631428, 87.44082142, 65.28944294, 68.84894015, 90.66995439, 68.06399924, 70.99697988, 16.79216832, 42.89832888, 15.43613952, 81.24332669, 6.88905259, 63.72521265, 42.67526973, 82.21721401, 92.65307152, 65.57717637, 80.05718022, 20.47604328, 14.12911913, 3.90392793, 3.44360129]
         self.dist_size = len(self.dist)
         self.root = n.Node(0)
-        self.c = 0.05
+        self.c = c_value
         self.leaf_nodes = []
         self.mcts_result = None
         print(f"node: {self.node_count} ({self.root.reward})")
