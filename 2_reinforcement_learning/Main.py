@@ -8,7 +8,7 @@ class Main:
 # length and width of gridworld (assuming square grid so length = width)
 dim = 9
 # where the agent will start from
-spawn = (8,7)
+spawn = (0,0)
 
 # entities in the grid world:
     # walls (blue squares)
@@ -26,6 +26,13 @@ agent = Agent(spawn)
 
 # creating grid world
 gw = rl(agent, entities, dim)
-gw.print_grid()
+# gw.print_grid()
 
-gw.move_agent('right')
+# manual control of agent (for testing)
+while True:
+    x = str(input())
+    if x=='north' or  x=='south' or x=='west' or x=='east':
+        gw.move_agent(x)
+    else:
+        break
+    

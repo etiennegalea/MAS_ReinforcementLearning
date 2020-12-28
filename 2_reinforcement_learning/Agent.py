@@ -9,17 +9,17 @@ class Agent:
 
     def move(self, direction):
         'move agent in a direction'
-        x=0; y=0
-        if direction == 'up':
-            x = -1
-        elif direction == 'down':
-            x = 1
-        elif direction == 'right':
-            y = 1
-        elif direction == 'left':
-            y = -1
+        row=0; col=0
+        if direction == 'north':
+            row = -1
+        elif direction == 'south':
+            row = 1
+        elif direction == 'east':
+            col = 1
+        elif direction == 'west':
+            col = -1
          
-        self.pos = (self.pos[0]+x, self.pos[1]+y)
+        self.pos = (self.pos[0]+row, self.pos[1]+col)
         print(f"Moved {direction} to: {self.pos}")
 
         return self.pos
