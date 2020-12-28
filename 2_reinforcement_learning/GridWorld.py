@@ -1,7 +1,7 @@
 from State import State
 import numpy as np
 
-class ReinforcementLearning:
+class GridWorld:
 
     def __init__(self, agent, entities, dim=9):
         self.agent = agent

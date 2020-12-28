@@ -1,4 +1,4 @@
-from ReinforcementLearning import ReinforcementLearning as rl
+from GridWorld import GridWorld
 from Agent import Agent
 
 class Main:
@@ -25,7 +25,7 @@ entities = {
 agent = Agent(spawn)
 
 # creating grid world
-gw = rl(agent, entities, dim)
+gw = GridWorld(agent, entities, dim)
 # gw.print_grid()
 
 # manual control of agent (for testing)
