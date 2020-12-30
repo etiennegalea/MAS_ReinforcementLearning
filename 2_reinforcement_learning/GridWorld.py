@@ -49,36 +49,60 @@ class GridWorld:
         print(f":: Agent pos: {self.agent.pos} | Total rewards accumulated: {self.total_reward} ::")
         
 
-    def move_agent(self, direction):
+    def move_agent(self, direction, pos):
         'move the agent across the grid world'
+        
+        def check_cur_pos(current_pos):
+            'check if current position allows agent'
+            allowed = True
+            cell = self.grid[current_pos[0]][current_pos[1]]
+            if cell.absorbing or not cell.movable:
+                allowed = False
+            return allowed
+
+        def check_next_pos(current_pos, new_pos):
+            '''
+            check if the next position is allowed
+            if not, leave state unchanged, but still incur rewards
+            '''
+            reward = 0
+            allowed = True
+            # check if the new position is allowed (wall/border)
+            if (new_pos[0] < 0 or new_pos[1] < 0)  or (new_pos[0] >= self.dim or new_pos[1] >= self.dim):
+                print(f"!! Path is blocked (border) !!")
+                allowed = False
+            elif not self.grid[new_pos[0]][new_pos[1]].movable:
+                print(f"!! Path is blocked (wall) !!")
+                allowed = False
+            return allowed
+
+        # if pos is not defined, assume current agent position
         current_pos = self.agent.pos
-        new_pos = self.agent.move(direction)
-        # cell = self.grid[new_pos[0]][new_pos[1]]
+        if pos is not None:
+            current_pos = pos
 
-        # check if the new position is allowed (wall/border)
-        if (new_pos[0] < 0 or new_pos[1] < 0)  or (new_pos[0] > self.dim or new_pos[1] > self.dim):
-            print(f"!! Path is blocked (border) !!")
-            new_pos = current_pos
-            self.total_reward -= 1
-        elif not self.grid[new_pos[0]][new_pos[1]].movable:
-            print(f"!! Path is blocked (wall) !!")
-            new_pos = current_pos
-            self.total_reward += self.grid[new_pos[0]][new_pos[1]].reward
-        # movement is allowed
+        new_pos = self.agent.move(direction, current_pos)
+
+        if not check_cur_pos(current_pos):
+            print(f"position {current_pos} is not allowed... skip!")
+            return 0
+        # elif check_next_pos(current_pos, new_pos):
+        if check_next_pos(current_pos, new_pos):
+            print(f"next position is allowed!")
+            self.print_grid()
+            return self.grid[new_pos[0]][new_pos[1]].reward
         else:
-            # incur rewards
-            self.total_reward += self.grid[new_pos[0]][new_pos[1]].reward
-        self.agent.pos = new_pos
+            print(f"next position is NOT allowed!")
+            return -1
 
-        self.print_grid()
+
+        # self.agent.pos = new_pos
+
 
         # check whether agent moved unto an absorbing state
-        if self.grid[new_pos[0]][new_pos[1]].absorbing:
-            print(f"---------------------- GAME OVER ----------------------")
+        # if self.grid[new_pos[0]][new_pos[1]].absorbing:
+            # print(f"---------------------- GAME OVER ----------------------")
             # TODO: end_game()
         
+        # return 
         
-    # TODO: 
-    def calc_state_value(self):
-        'calculate the state-value function for the equiprobable policy (1/4) for all 4 actions'
-
