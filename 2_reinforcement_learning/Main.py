@@ -32,7 +32,7 @@ gw = GridWorld(agent, entities, dim)
 
 # print(gw.calc_all_rewards(agent, policy=0.25))
 
-gw.montecarlo_rl(iterations=50)
+gw.montecarlo_rl(iterations=10000)
 
 print(gw)
 

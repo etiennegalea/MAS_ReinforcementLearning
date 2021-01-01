@@ -14,6 +14,7 @@ class GridWorld:
         self.grid = [[State([j,i]) for i in range(dim)] for j in range(dim)]
         self.init_grid(entities)
         self.total_reward = 0
+        self.print = False
 
     def init_grid(self, entities):
         'populate grid world with entities'
@@ -73,10 +74,12 @@ class GridWorld:
             allowed = True
             # check if the new position is allowed (wall/border)
             if (new_pos[0] < 0 or new_pos[1] < 0)  or (new_pos[0] >= self.dim or new_pos[1] >= self.dim):
-                print(f"!! Path is blocked (border) !!")
+                if self.print:
+                    print(f"!! Path is blocked (border) !!")
                 allowed = False
             elif not self.grid[new_pos[0]][new_pos[1]].movable:
-                print(f"!! Path is blocked (wall) !!")
+                if self.print:
+                    print(f"!! Path is blocked (wall) !!")
                 allowed = False
             return allowed
 
@@ -99,7 +102,8 @@ class GridWorld:
         #     reward = 0
         # if the next position is not allowed (in walls or over borders)
         if check_next_pos(current_pos, new_pos):
-            print(f"next position is allowed!")
+            if self.print:
+                print(f"next position is allowed!")
             reward = self.grid[new_pos[0]][new_pos[1]].reward
             pos = new_pos
             self.total_reward += reward
@@ -108,12 +112,14 @@ class GridWorld:
             #     self.agent.pos = state.pos
         # else if it is allowed, incur rewards and new state
         else:
-            print(f"next position is NOT allowed!")
+            if self.print:
+                print(f"next position is NOT allowed!")
             self.total_reward += -1
             pos = current_pos
 
-        self.print_grid(pos)
-        print(f"{current_pos} --> {pos}")
+        if self.print:
+            self.print_grid(pos)
+            print(f"{current_pos} --> {pos}")
 
         return pos
 
@@ -165,7 +171,8 @@ class GridWorld:
             col = -1
          
         new_pos = (current_pos[0]+row, current_pos[1]+col)
-        print(f"Moved {direction} to: {new_pos}")
+        if self.print:
+            print(f"Moved {direction} to: {new_pos}")
 
         return new_pos
     
@@ -182,6 +189,7 @@ class GridWorld:
 
         # repeat for number of iterations
         for iteration in range(iterations):
+            print(f"ITERATION: {iteration}")
             for row in range(self.dim):
                 for col in range(self.dim):
                     cell = self.grid[row][col]
@@ -198,14 +206,17 @@ class GridWorld:
                     while not s.absorbing:
                         # monitoring
                         # sleep(0.1)
-                        self.clear()
+                        if self.print:
+                            self.clear()
 
                         pos = self.move_agent(direction=self.random_move_agent(), current_pos=pos)
                         s = self.grid[pos[0]][pos[1]]
 
-                    print(f"Terminal state reached: {s.pos} ({s.reward})")
+                    if self.print:
+                        print(f"Terminal state reached: {s.pos} ({s.reward})")
                     cell.v_pi.append(self.total_reward)
-                    print(f"{cell.pos} v_pi: {cell.v_pi}")
+                    if self.print:
+                        print(f"{cell.pos} v_pi: {cell.v_pi}")
         
         # print results
         for row in range(self.dim):
