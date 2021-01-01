@@ -1,7 +1,7 @@
 class Agent:
     'Agent (player) of the game. Assuming that player will start from [0,0]'
-    def __init__(self, pos=(0,0)):
-        self.pos = (pos[0],pos[1])
+    def __init__(self, pos=[0,0]):
+        self.pos = pos
         print(self.pos)
 
     def __str__(self):

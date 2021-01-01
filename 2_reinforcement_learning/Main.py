@@ -1,7 +1,7 @@
 from Agent import Agent
 from GridWorld import GridWorld
 import copy
-
+from Analytics import Analytics
 
 class Main:
     'SARSA and Q-learning'
@@ -10,7 +10,7 @@ class Main:
 # length and width of gridworld (assuming square grid so length = width)
 dim = 9
 # where the agent will start from
-spawn = (0,0)
+spawn = [0,0]
 
 # entities in the grid world:
     # walls (blue squares)
@@ -32,7 +32,14 @@ gw = GridWorld(agent, entities, dim)
 
 # print(gw.calc_all_rewards(agent, policy=0.25))
 
-gw.montecarlo_rl()
+gw.montecarlo_rl(iterations=50)
+
+print(gw)
+
+stats = Analytics(gw.grid)
+stats.show_heatmap()
+
+
 
 # manual control of agent (for testing)
 # current_pos = spawn

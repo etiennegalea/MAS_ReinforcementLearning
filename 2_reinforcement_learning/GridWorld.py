@@ -11,7 +11,7 @@ class GridWorld:
         self.agent = agent
         self.dim = dim
         # init grid with empty space (movable and non-absorbing with reward -1)
-        self.grid = [[State((i,j)) for i in range(dim)] for j in range(dim)]
+        self.grid = [[State([j,i]) for i in range(dim)] for j in range(dim)]
         self.init_grid(entities)
         self.total_reward = 0
 
@@ -36,7 +36,7 @@ class GridWorld:
             # set state for defined positions
             for pos in entities[ent_type]:
                 row=pos[0]; col=pos[1]
-                self.grid[row][col] = State((row,col), reward, movable, absorbing)
+                self.grid[row][col] = State([row,col], reward, movable, absorbing)
 
     def print_grid(self, agent_pos):
         'Print grid world with rewards in place of state cells'
@@ -46,12 +46,12 @@ class GridWorld:
         #     agent_pos = pos
 
         # switch agent pos (for some reason..)
-        agent_pos = (agent_pos[1], agent_pos[0])
+        # agent_pos = (agent_pos[1], agent_pos[0]]
         print("\n")
         for i in range(0, self.dim):
             for j in range(0, self.dim):
                 cell = self.grid[i][j]
-                if agent_pos != (j,i):
+                if agent_pos != (i,j):
                     print(f"{cell.print_cell()}", end="\t")
                 else:
                     print(f"{cell.print_cell(agent_present=True)}", end="\t")
@@ -171,7 +171,7 @@ class GridWorld:
     
     
     # TODO:
-    def montecarlo_rl(self):
+    def montecarlo_rl(self, iterations):
         '''
         Calculate V_pi using monte carlo sampling.
         model-free reinforcement learning (RL): finding optimal policies without an explicit model for the MDP
@@ -179,36 +179,45 @@ class GridWorld:
         - compute value functions using direct sampling (instead of bellman equations)
         - converges asymptotically
         '''
-        
-        for row in range(self.dim):
-            for col in range(self.dim):
-                cell = self.grid[col][row]
-                # starting state
-                s = cell
-                pos = s.pos
-                self.total_reward = 0
 
-                # if the cell in non movable
-                if not self.check_cur_pos(s.pos):
-                    cell.v_pi = 0
-                    break
+        # repeat for number of iterations
+        for iteration in range(iterations):
+            for row in range(self.dim):
+                for col in range(self.dim):
+                    cell = self.grid[row][col]
+                    # starting state
+                    s = cell
+                    pos = s.pos
+                    self.total_reward = 0
 
-                while not s.absorbing:
-                    # monitoring
-                    # sleep(0.1)
-                    self.clear()
+                    # if the cell in non movable
+                    if not self.check_cur_pos(s.pos):
+                        cell.v_pi = 0
+                        continue
 
-                    pos = self.move_agent(direction=self.random_move_agent(), current_pos=pos)
-                    s = self.grid[pos[1]][pos[0]]
+                    while not s.absorbing:
+                        # monitoring
+                        # sleep(0.1)
+                        self.clear()
 
-                print(f"Terminal state reached: {s.pos} ({s.reward})")
-                cell.v_pi = self.total_reward
+                        pos = self.move_agent(direction=self.random_move_agent(), current_pos=pos)
+                        s = self.grid[pos[0]][pos[1]]
+
+                    print(f"Terminal state reached: {s.pos} ({s.reward})")
+                    cell.v_pi.append(self.total_reward)
+                    print(f"{cell.pos} v_pi: {cell.v_pi}")
         
         # print results
         for row in range(self.dim):
+            print()
             for col in range(self.dim):
-                cell = self.grid[col][row]
-                print(f"{cell.pos} :: {cell.v_pi}")
+                cell = self.grid[row][col]
+                cell.v_pi_mean = round(np.mean(cell.v_pi), 2)
+                print(f"{cell.pos} :: {cell.v_pi_mean}", end='\t')
+                
+            cell.v_pi_mean 
+
+                
 
 
     def check_cur_pos(self, current_pos):
@@ -233,7 +242,7 @@ class GridWorld:
                 # calculate expected immediate reward for each state
                 reward = 0
                 for direction in directions:
-                    reward += self.move_agent(direction, pos=(i,j))
+                    reward += self.move_agent(direction, pos=[i,j])
                 reward_matrix[i][j] = reward
 
         return reward_matrix
