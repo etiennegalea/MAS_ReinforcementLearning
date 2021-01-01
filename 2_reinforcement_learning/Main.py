@@ -1,6 +1,6 @@
 from Agent import Agent
 from GridWorld import GridWorld
-from RL import RL
+import copy
 
 class Main:
     'SARSA and Q-learning'
@@ -29,14 +29,16 @@ agent = Agent(spawn)
 gw = GridWorld(agent, entities, dim)
 # gw.print_grid()
 
-rl = RL(gw)
-print(rl.calc_rewards(agent, policy=0.25))
+# print(gw.calc_all_rewards(agent, policy=0.25))
+
+# gw.montecarlo_rl()
 
 # manual control of agent (for testing)
-# while True:
-#     x = str(input())
-#     if x=='north' or  x=='south' or x=='west' or x=='east':
-#         gw.move_agent(x)
-#     else:
-#         break
+current_pos = spawn
+while True:
+    x = str(input())
+    if x=='north' or  x=='south' or x=='west' or x=='east':
+        current_pos = gw.move_agent(x, current_pos)
+    else:
+        break
     

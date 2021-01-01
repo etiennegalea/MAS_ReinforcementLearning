@@ -1,7 +1,7 @@
 class State:
     'Defined state of cell in grid world'
     def __init__(self, pos=(0,0), reward= -1, movable=True, absorbing=False, agent_present=False):
-        self.pos = pos
+        self.pos = (pos[0],pos[1])
         self.reward = reward
         self.movable = movable
         self.absorbing = absorbing
@@ -9,7 +9,7 @@ class State:
     def __str__(self):
         return f"{self.pos} reward: {self.reward} | movable: {self.movable} | absorbing: {self.absorbing}"
     
-    def print_cell(self, pos):
+    def print_cell(self, agent_present=False):
         'pretty print cell according to state attributes'
         cell = str(self.reward)
         # wall
@@ -19,6 +19,6 @@ class State:
             cell = f"[{cell}]*"
 
         # agent is present
-        if self.pos == pos:
+        if agent_present:
             cell = f"<{cell}>"
         return cell

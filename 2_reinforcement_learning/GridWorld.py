@@ -1,5 +1,7 @@
 from State import State
 import numpy as np
+import random
+import copy
 
 class GridWorld:
 
@@ -34,22 +36,30 @@ class GridWorld:
                 row=pos[0]; col=pos[1]
                 self.grid[row][col] = State((row,col), reward, movable, absorbing)
 
-    def print_grid(self):
+    def print_grid(self, agent_pos):
         'Print grid world with rewards in place of state cells'
+
+        # agent_pos = self.agent.pos
+        # if pos is not None:
+        #     agent_pos = pos
+
+        # switch agent pos (for some reason..)
+        agent_pos = (agent_pos[1], agent_pos[0])
         print("\n")
         for i in range(0, self.dim):
             for j in range(0, self.dim):
                 cell = self.grid[i][j]
-                # switch agent pos (for some reason..)
-                agent_pos = (self.agent.pos[1], self.agent.pos[0])
-                print(f"{cell.print_cell(agent_pos)}", end="\t")
+                if agent_pos != (j,i):
+                    print(f"{cell.print_cell()}", end="\t")
+                else:
+                    print(f"{cell.print_cell(agent_present=True)}", end="\t")
             print("\n")
         
         # print agent position
-        print(f":: Agent pos: {self.agent.pos} | Total rewards accumulated: {self.total_reward} ::")
+        print(f":: Agent pos: {agent_pos} | Total rewards accumulated: {self.total_reward} ::")
         
 
-    def move_agent(self, direction, pos):
+    def move_agent(self, direction, current_pos):
         'move the agent across the grid world'
         
         def check_cur_pos(current_pos):
@@ -77,23 +87,41 @@ class GridWorld:
             return allowed
 
         # if pos is not defined, assume current agent position
-        current_pos = self.agent.pos
-        if pos is not None:
-            current_pos = pos
+        # current_pos = self.agent.pos
+        # if pos is not None:
+            # current_pos = pos
 
-        new_pos = self.agent.move(direction, current_pos)
+        # perform move
+        new_pos = self.move(direction, current_pos)
 
-        if not check_cur_pos(current_pos):
-            print(f"position {current_pos} is not allowed... skip!")
-            return 0
-        # elif check_next_pos(current_pos, new_pos):
+        # set default state and reward
+        # state = self.grid[current_pos[0]][current_pos[1]]
+        pos = current_pos
+        reward = 0
+
+        # if the current position is impossible (in walls or over borders)
+        # if not check_cur_pos(current_pos):
+        #     print(f"position {current_pos} is not allowed... skip!")
+        #     reward = 0
+        # if the next position is not allowed (in walls or over borders)
         if check_next_pos(current_pos, new_pos):
             print(f"next position is allowed!")
-            self.print_grid()
-            return self.grid[new_pos[0]][new_pos[1]].reward
+            reward = self.grid[new_pos[0]][new_pos[1]].reward
+            pos = new_pos
+            self.total_reward += reward
+            # update agent position
+            # if pos is None:
+            #     self.agent.pos = state.pos
+        # else if it is allowed, incur rewards and new state
         else:
             print(f"next position is NOT allowed!")
-            return -1
+            self.total_reward += -1
+            pos = current_pos
+
+        self.print_grid(pos)
+        print(f"{current_pos} --> {pos}")
+
+        return pos
 
 
         # self.agent.pos = new_pos
@@ -106,3 +134,102 @@ class GridWorld:
         
         # return 
         
+
+    def random_move_agent(self):
+        'Move in a random direction with an equiprobable policy of 1/4'
+        r = random.random()
+        direction = ''
+        if r < 0.25:
+            direction = 'north'
+        elif r < 0.5:
+            direction = 'south'
+        elif r < 0.75:
+            direction = 'east'
+        elif r < 1:
+            direction = 'west'
+
+        return direction
+
+    
+    def move(self, direction, current_pos):
+        'move agent in a direction'
+
+        # if pos is not defined, assume current agent position
+        # current_pos = self.agent.pos
+        # if pos is not None:
+        #     current_pos = pos
+
+
+        row=0; col=0
+        if direction == 'north':
+            row = -1
+        elif direction == 'south':
+            row = 1
+        elif direction == 'east':
+            col = 1
+        elif direction == 'west':
+            col = -1
+         
+        new_pos = (current_pos[0]+row, current_pos[1]+col)
+        print(f"Moved {direction} to: {new_pos}")
+
+        return new_pos
+    
+    
+    # TODO:
+    def montecarlo_rl(self):
+        '''
+        Calculate V_pi using monte carlo sampling.
+        model-free reinforcement learning (RL): finding optimal policies without an explicit model for the MDP
+        - complete sample returns for episodic tasks
+        - compute value functions using direct sampling (instead of bellman equations)
+        - converges asymptotically
+        '''
+        
+        # print rewards
+        # for i in range(0, len(states)):
+        #     for j in range(0, len(states)):
+        #         print(states[i][j].v_pi, end='\t')
+        #     print()
+
+        # perform copy of states (unreferenced)
+        # temp_states = copy.deepcopy(self.grid)
+
+        # starting state
+        pos = (0,0)
+        s = self.grid[pos[0]][pos[1]]
+        self.total_reward = 0
+        while not s.absorbing:
+            direction = self.random_move_agent()
+            pos = self.move_agent(direction=direction, pos=pos)
+            # tot_reward += r
+        return
+
+        print(f"Terminal state reached: {s.pos} ({s.reward})")
+        print(self.total_reward)
+
+
+    def calc_all_rewards(self, agent, policy=0.25):
+        'calculate expected immediate reward in state s under the specified policy'
+        # init matrix
+        reward_matrix = [[0 for i in range(self.dim)] for j in range(self.dim)]
+        
+        directions = ['north', 'south', 'east', 'west']
+    
+        # loop over all the states in the matrix
+        for i in range(self.dim):
+            for j in range(self.dim):
+                # calculate expected immediate reward for each state
+                reward = 0
+                for direction in directions:
+                    reward += self.move_agent(direction, pos=(i,j))
+                reward_matrix[i][j] = reward
+
+        return reward_matrix
+
+    # TODO: 
+    def calc_state_value(self, policy=0.25):
+        'calculate the state-value function for the equiprobable policy (1/4) for all 4 actions'
+
+
+
