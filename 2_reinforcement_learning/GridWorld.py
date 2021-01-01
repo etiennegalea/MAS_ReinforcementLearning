@@ -2,6 +2,8 @@ from State import State
 import numpy as np
 import random
 import copy
+from os import system, name
+from time import sleep
 
 class GridWorld:
 
@@ -61,14 +63,6 @@ class GridWorld:
 
     def move_agent(self, direction, current_pos):
         'move the agent across the grid world'
-        
-        def check_cur_pos(current_pos):
-            'check if current position allows agent'
-            allowed = True
-            cell = self.grid[current_pos[0]][current_pos[1]]
-            if cell.absorbing or not cell.movable:
-                allowed = False
-            return allowed
 
         def check_next_pos(current_pos, new_pos):
             '''
@@ -186,27 +180,44 @@ class GridWorld:
         - converges asymptotically
         '''
         
-        # print rewards
-        # for i in range(0, len(states)):
-        #     for j in range(0, len(states)):
-        #         print(states[i][j].v_pi, end='\t')
-        #     print()
+        for row in range(self.dim):
+            for col in range(self.dim):
+                cell = self.grid[col][row]
+                # starting state
+                s = cell
+                pos = s.pos
+                self.total_reward = 0
 
-        # perform copy of states (unreferenced)
-        # temp_states = copy.deepcopy(self.grid)
+                # if the cell in non movable
+                if not self.check_cur_pos(s.pos):
+                    cell.v_pi = 0
+                    break
 
-        # starting state
-        pos = (0,0)
-        s = self.grid[pos[0]][pos[1]]
-        self.total_reward = 0
-        while not s.absorbing:
-            direction = self.random_move_agent()
-            pos = self.move_agent(direction=direction, pos=pos)
-            # tot_reward += r
-        return
+                while not s.absorbing:
+                    # monitoring
+                    # sleep(0.1)
+                    self.clear()
 
-        print(f"Terminal state reached: {s.pos} ({s.reward})")
-        print(self.total_reward)
+                    pos = self.move_agent(direction=self.random_move_agent(), current_pos=pos)
+                    s = self.grid[pos[1]][pos[0]]
+
+                print(f"Terminal state reached: {s.pos} ({s.reward})")
+                cell.v_pi = self.total_reward
+        
+        # print results
+        for row in range(self.dim):
+            for col in range(self.dim):
+                cell = self.grid[col][row]
+                print(f"{cell.pos} :: {cell.v_pi}")
+
+
+    def check_cur_pos(self, current_pos):
+        'check if current position allows agent'
+        cell = self.grid[current_pos[0]][current_pos[1]]
+        if cell.absorbing or not cell.movable:
+            return False
+        else:
+            return True
 
 
     def calc_all_rewards(self, agent, policy=0.25):
@@ -233,3 +244,11 @@ class GridWorld:
 
 
 
+    def clear(self):
+        # check and make call for specific operating system 
+        # for windows 
+        if name == 'nt': 
+            _ = system('cls') 
+        # for mac and linux(here, os.name is 'posix') 
+        else: 
+            _ = system('clear') 
