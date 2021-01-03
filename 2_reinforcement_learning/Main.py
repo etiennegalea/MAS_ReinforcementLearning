@@ -25,17 +25,16 @@ entities = {
 
 # create agent
 agent = Agent(spawn)
-
 # creating grid world
 gw = GridWorld(agent, entities, dim)
-# gw.print_grid()
 
-# print(gw.calc_all_rewards(agent, policy=0.25))
 
+# Use Monte Carlo policy evaluation to compute the state value function v_pi(s) for the equiprobable policy pi
 gw.montecarlo_rl(iterations=10000)
 
-print(gw)
 
+
+# Plot graphs and figures
 stats = Analytics(gw.grid)
 stats.show_heatmap()
 

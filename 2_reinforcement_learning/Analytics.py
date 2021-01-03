@@ -7,16 +7,15 @@ class Analytics:
         self.states = states
     
     def show_heatmap(self):
-        'show heatmap'
+        'Plot a heatmap of the state values obtained via the Monte Carlo policy evaluation'
 
         # convert to numpy array
         arr = np.array(self.states)
         arr_v = [[arr[j,i].v_pi_mean for i in range(9)] for j in range(9)]
         # plot heatmap
-        # plt.figure(figsize=(15,15))
         plt.rcParams['font.size'] = 6
         sns.heatmap(arr_v, annot=True, fmt='.1f')
-        plt.savefig('heatmap.png')
+        plt.savefig('./2_reinforcement_learning/figs/heatmap.png')
         plt.show()
 
         print('Done')

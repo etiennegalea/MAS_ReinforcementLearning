@@ -42,12 +42,6 @@ class GridWorld:
     def print_grid(self, agent_pos):
         'Print grid world with rewards in place of state cells'
 
-        # agent_pos = self.agent.pos
-        # if pos is not None:
-        #     agent_pos = pos
-
-        # switch agent pos (for some reason..)
-        # agent_pos = (agent_pos[1], agent_pos[0]]
         print("\n")
         for i in range(0, self.dim):
             for j in range(0, self.dim):
@@ -83,23 +77,13 @@ class GridWorld:
                 allowed = False
             return allowed
 
-        # if pos is not defined, assume current agent position
-        # current_pos = self.agent.pos
-        # if pos is not None:
-            # current_pos = pos
-
         # perform move
         new_pos = self.move(direction, current_pos)
 
         # set default state and reward
-        # state = self.grid[current_pos[0]][current_pos[1]]
         pos = current_pos
         reward = 0
 
-        # if the current position is impossible (in walls or over borders)
-        # if not check_cur_pos(current_pos):
-        #     print(f"position {current_pos} is not allowed... skip!")
-        #     reward = 0
         # if the next position is not allowed (in walls or over borders)
         if check_next_pos(current_pos, new_pos):
             if self.print:
@@ -107,9 +91,6 @@ class GridWorld:
             reward = self.grid[new_pos[0]][new_pos[1]].reward
             pos = new_pos
             self.total_reward += reward
-            # update agent position
-            # if pos is None:
-            #     self.agent.pos = state.pos
         # else if it is allowed, incur rewards and new state
         else:
             if self.print:
@@ -121,19 +102,7 @@ class GridWorld:
             self.print_grid(pos)
             print(f"{current_pos} --> {pos}")
 
-        return pos
-
-
-        # self.agent.pos = new_pos
-
-
-        # check whether agent moved unto an absorbing state
-        # if self.grid[new_pos[0]][new_pos[1]].absorbing:
-            # print(f"---------------------- GAME OVER ----------------------")
-            # TODO: end_game()
-        
-        # return 
-        
+        return pos        
 
     def random_move_agent(self):
         'Move in a random direction with an equiprobable policy of 1/4'
@@ -149,16 +118,9 @@ class GridWorld:
             direction = 'west'
 
         return direction
-
     
     def move(self, direction, current_pos):
         'move agent in a direction'
-
-        # if pos is not defined, assume current agent position
-        # current_pos = self.agent.pos
-        # if pos is not None:
-        #     current_pos = pos
-
 
         row=0; col=0
         if direction == 'north':
@@ -176,8 +138,6 @@ class GridWorld:
 
         return new_pos
     
-    
-    # TODO:
     def montecarlo_rl(self, iterations):
         '''
         Calculate V_pi using monte carlo sampling.
@@ -228,11 +188,14 @@ class GridWorld:
                 
             cell.v_pi_mean 
 
-                
+    def sarsa(self):
+        'SARSA in combination with greedification to search for an optimal policy'
+
+        
 
 
     def check_cur_pos(self, current_pos):
-        'check if current position allows agent'
+        'check if current position allows the agent to be present (possible border or wall)'
         cell = self.grid[current_pos[0]][current_pos[1]]
         if cell.absorbing or not cell.movable:
             return False
@@ -257,12 +220,6 @@ class GridWorld:
                 reward_matrix[i][j] = reward
 
         return reward_matrix
-
-    # TODO: 
-    def calc_state_value(self, policy=0.25):
-        'calculate the state-value function for the equiprobable policy (1/4) for all 4 actions'
-
-
 
     def clear(self):
         # check and make call for specific operating system 
