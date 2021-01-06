@@ -35,12 +35,12 @@ class State:
             elif direction == 'west':
                 sign = '<'
                 
-            cell = str(f"{sign} ({round(self.q[direction],1)})")
+            cell = str(f"{sign} ({round(self.q[direction],2)})")
         elif to_show == 'v':
             cell = str(self.v_pi)
         # wall
         if not self.movable:
-            cell = f"|{cell}|"
+            cell = f"|\t|"
         elif self.absorbing:
             cell = f"[{cell}]*"
 

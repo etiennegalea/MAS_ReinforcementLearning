@@ -20,11 +20,16 @@ class Analytics:
 
         print('Done')
 
-    def sarsa_lineplot(self, actions):
+    def sarsa_lineplot(self, actions, rewards):
         'Show line plot with actions per step'
 
-        index_actions = [i for i in range(len(actions))]
+        indexes = [i for i in range(len(actions))]
 
-        sns.lineplot(x=index_actions, y=actions)
-        plt.savefig('./2_reinforcement_learning/figs/sarsa_actions_per_step.png')
+        sns.lineplot(x=indexes, y=actions)
+        sns.lineplot(x=indexes, y=rewards)
+
+        plt.xlabel('episodes')
+        plt.legend(['n actions', 'rewards'])
+
+        plt.savefig('./2_reinforcement_learning/figs/sarsa_actions_rewards_per_episode.png')
         plt.show()

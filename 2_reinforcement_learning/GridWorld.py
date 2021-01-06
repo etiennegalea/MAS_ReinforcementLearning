@@ -192,55 +192,59 @@ class GridWorld:
     #     q_matrix = []
     #     for s in states
 
-    def sarsa(self, episodes=10000, learning_rate=0.1, discount=0.9, epsilon=0.2):
+    def sarsa(self, episodes=10000, lr=0.1, discount=1, epsilon=0.3, epsilon_decay=0.01):
         'SARSA in combination with greedification to search for an optimal policy'
 
-        def next_action_state(s):
+        def next_action_state(s, a):
             # next state determined by greedy policy (e-greedy)
-            a = self.e_greedy(s)
             new_pos = self.move_agent(a, s.pos)
             s_prime = self.grid[new_pos[0]][new_pos[1]]
 
-            return a, s_prime
+            return s_prime, s_prime.reward
             
-        actions_per_step = []
+        actions_per_episode = []
+        rewards_per_episode = []
         
         # for each episode
         for ep in range(0, episodes):
-            # init
-            self.total_reward = 0
-            # backup_grid = copy.deepcopy(self.grid)  # for resetting states
-
             # define starting state
             s = self.grid[0][0]
-            a, _ = next_action_state(s)
+
+            # choose action based on policy (e-greedy)
+            a = self.e_greedy(s, epsilon)
+
+            # incremently decrease learning-rate per episode until threshold (0.1) is reached
+            if epsilon > 0.1:
+                epsilon -= epsilon_decay
 
             actions = 0
+            rewards = 0
 
             # for each step in episode (until done?)
             while True:
-                # action given by policy (pi) for state (s)
-                a_prime, s_prime = next_action_state(s)
-                reward = s_prime.reward
+                s_prime, reward = next_action_state(s, a)
+                a_prime = self.e_greedy(s_prime, epsilon)
 
                 # update algorithm
-                s.q[a] = s.q[a] + learning_rate*(s_prime.reward + discount*(s_prime.q[a_prime]) - s.q[a])
+                s.q[a] = s.q[a] + lr*(reward + discount*(s_prime.q[a_prime]) - s.q[a])
 
                 s = s_prime
                 a = a_prime
 
                 actions += 1
+                rewards += reward
                 
                 # repeat until reaching a terminal state
                 if s.absorbing:
                     break
 
-            actions_per_step.append(actions)
+            actions_per_episode.append(actions)
+            rewards_per_episode.append(rewards)
 
-            # print current gridworld
-            # self.print_grid(s.pos, to_show='q')
+        # print current gridworld
+        self.print_grid(s.pos, to_show='q')
     
-        return actions_per_step
+        return actions_per_episode, rewards_per_episode
 
     # def sarsa(self, s, alpha=0.1, discount=1):
     #     'SARSA in combination with greedification to search for an optimal policy'
