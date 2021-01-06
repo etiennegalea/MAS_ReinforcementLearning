@@ -19,3 +19,12 @@ class Analytics:
         plt.show()
 
         print('Done')
+
+    def sarsa_lineplot(self, actions):
+        'Show line plot with actions per step'
+
+        index_actions = [i for i in range(len(actions))]
+
+        sns.lineplot(x=index_actions, y=actions)
+        plt.savefig('./2_reinforcement_learning/figs/sarsa_actions_per_step.png')
+        plt.show()

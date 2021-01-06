@@ -30,13 +30,16 @@ gw = GridWorld(agent, entities, dim)
 
 
 # Use Monte Carlo policy evaluation to compute the state value function v_pi(s) for the equiprobable policy pi
-gw.montecarlo_rl(iterations=10000)
+# gw.montecarlo_rl(iterations=10000)
 
-
+actions_per_step = gw.sarsa(episodes=3000)
+print(actions_per_step)
 
 # Plot graphs and figures
 stats = Analytics(gw.grid)
-stats.show_heatmap()
+# stats.show_heatmap()
+
+stats.sarsa_lineplot(actions_per_step)
 
 
 

@@ -6,7 +6,7 @@ class Main:
 
 depth = 12
 c_values = [0, 0.01, 0.05, 0.1, 0.5, 1, 2, 5]
-repeats = 25
+repeats = 3
 
 statistics = {}
 
@@ -16,7 +16,9 @@ for c in c_values:
     min_rank = 100
     statistics[c] = {}
 
+    print(f"UCB C VALUE: {c}")
     for i in range(0, repeats):
+        print(f"ITERATION: {i}")
         # initialize tree
         bt = BinaryTree(depth, c)
         root_node = bt.init_tree(bt.root)
@@ -52,4 +54,5 @@ for c in c_values:
 
 print(statistics)
 
-stats.create_plots(statistics)
+# stats.create_barplot(statistics)
+stats.create_boxplot(statistics, repeats)

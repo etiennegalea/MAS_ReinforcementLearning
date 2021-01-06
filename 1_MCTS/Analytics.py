@@ -15,7 +15,7 @@ class Analytics:
         l = len(self.dist)
         percent = int(l*0.05)
         
-        print(f"Length of distribution: {l}")
+        # print(f"Length of distribution: {l}")
         # print(f"\nDistribution top 10%:\n{self.dist[-percent:l]}")
         # print(f"\nDistribution bottom 10%:\n{self.dist[0:percent]}")
 
@@ -24,8 +24,9 @@ class Analytics:
         sns.distplot(self.dist)
         plt.xlim(0,100)
         plt.ylabel('Density')
-        plt.legend()
         plt.savefig('./1_MCTS/figs/dist_plot_'+str(c)+'.png')
+        plt.show()
+        plt.close()
 
         return
 
@@ -52,14 +53,14 @@ class Analytics:
 
         rank_percent = round((rank_result_node / l)*100, 2)
 
-        print(f"\nRank of result node: {rank_result_node}/{l} ({rank_percent}%) (reward of {self.mcts_result.reward})")
-        print(f"max reward: {best_node.reward}")
-        print(f"min reward: {worst_node.reward}")
+        # print(f"\nRank of result node: {rank_result_node}/{l} ({rank_percent}%) (reward of {self.mcts_result.reward})")
+        # print(f"max reward: {best_node.reward}")
+        # print(f"min reward: {worst_node.reward}")
 
         return rank_percent
 
     # TODO: violin/box plots
-    def create_plots(self, stats):
+    def create_barplot(self, stats):
 
         df = pd.DataFrame()
         for c in stats:
@@ -77,3 +78,21 @@ class Analytics:
 
         plt.savefig('./1_MCTS/figs/c_plot.png')
         plt.show()
+
+    def create_boxplot(self, stats, repeats):
+        'Box plot for mcts best nodes for different values of c'
+
+        df = pd.DataFrame(stats)
+        df = df[0:repeats]
+
+        plt.figure(figsize=(16,10))
+        sns.boxplot(x='c', y='value', hue='variable', data=df_melted)
+
+        plt.ylim(0, 100)
+        plt.ylabel('Reward')
+        plt.xlabel('UCB c value')
+        plt.legend()
+
+        plt.savefig('./1_MCTS/figs/c_plot.png')
+        plt.show()
+

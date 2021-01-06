@@ -39,7 +39,7 @@ class GridWorld:
                 row=pos[0]; col=pos[1]
                 self.grid[row][col] = State([row,col], reward, movable, absorbing)
 
-    def print_grid(self, agent_pos):
+    def print_grid(self, agent_pos, to_show='reward'):
         'Print grid world with rewards in place of state cells'
 
         print("\n")
@@ -47,9 +47,9 @@ class GridWorld:
             for j in range(0, self.dim):
                 cell = self.grid[i][j]
                 if agent_pos != (i,j):
-                    print(f"{cell.print_cell()}", end="\t")
+                    print(f"{cell.print_cell(to_show)}", end="\t")
                 else:
-                    print(f"{cell.print_cell(agent_present=True)}", end="\t")
+                    print(f"{cell.print_cell(to_show, agent_present=True)}", end="\t")
             print("\n")
         
         # print agent position
@@ -188,11 +188,73 @@ class GridWorld:
                 
             cell.v_pi_mean 
 
-    def sarsa(self):
+    # def init_q_matrix(self):
+    #     q_matrix = []
+    #     for s in states
+
+    def sarsa(self, episodes=10000, learning_rate=0.1, discount=0.9, epsilon=0.2):
         'SARSA in combination with greedification to search for an optimal policy'
 
-        
+        def next_action_state(s):
+            # next state determined by greedy policy (e-greedy)
+            a = self.e_greedy(s)
+            new_pos = self.move_agent(a, s.pos)
+            s_prime = self.grid[new_pos[0]][new_pos[1]]
 
+            return a, s_prime
+            
+        actions_per_step = []
+        
+        # for each episode
+        for ep in range(0, episodes):
+            # init
+            self.total_reward = 0
+            # backup_grid = copy.deepcopy(self.grid)  # for resetting states
+
+            # define starting state
+            s = self.grid[0][0]
+            a, _ = next_action_state(s)
+
+            actions = 0
+
+            # for each step in episode (until done?)
+            while True:
+                # action given by policy (pi) for state (s)
+                a_prime, s_prime = next_action_state(s)
+                reward = s_prime.reward
+
+                # update algorithm
+                s.q[a] = s.q[a] + learning_rate*(s_prime.reward + discount*(s_prime.q[a_prime]) - s.q[a])
+
+                s = s_prime
+                a = a_prime
+
+                actions += 1
+                
+                # repeat until reaching a terminal state
+                if s.absorbing:
+                    break
+
+            actions_per_step.append(actions)
+
+            # print current gridworld
+            # self.print_grid(s.pos, to_show='q')
+    
+        return actions_per_step
+
+    # def sarsa(self, s, alpha=0.1, discount=1):
+    #     'SARSA in combination with greedification to search for an optimal policy'
+
+
+    def e_greedy(self, s, epsilon=0.1):
+        'epsilon-greedy policy returning either random or greedy, depending on rate'
+
+        # if random float is smaller than epsilon, greedy (0 < e < 1)
+        if random.random() < epsilon:
+            return max(s.q, key=lambda k: s.q[k])
+        else:
+            # use random policy
+            return self.random_move_agent()
 
     def check_cur_pos(self, current_pos):
         'check if current position allows the agent to be present (possible border or wall)'

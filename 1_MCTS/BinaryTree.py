@@ -20,7 +20,8 @@ class BinaryTree:
         self.c = c_value
         self.leaf_nodes = []
         self.mcts_result = None
-        print(f"node: {self.node_count} ({self.root.reward})")
+        self.print = False
+        # print(f"node: {self.node_count} ({self.root.reward})")
 
 
     def init_tree(self, node, current_depth=0, node_count=0):
@@ -35,7 +36,8 @@ class BinaryTree:
                     self.leaf_nodes.append(node.left)
                 else:
                     node.left = n.Node(0)
-                print(f"({node.left.id}) reward: ({node.left.reward}) - orientation: left :: parent: ({node.id})")
+                if self.print:
+                    print(f"({node.left.id}) reward: ({node.left.reward}) - orientation: left :: parent: ({node.id})")
                 self.init_tree(node.left, current_depth+1)
             if node.right is None:
                 # self.node_count+=1
@@ -45,7 +47,8 @@ class BinaryTree:
                     self.leaf_nodes.append(node.right)
                 else:
                     node.right = n.Node(0)
-                print(f"({node.right.id}) reward: {self.node_count} - ({node.right.reward}) - orientation: right :: parent: ({node.id})")
+                if self.print:
+                    print(f"({node.right.id}) reward: {self.node_count} - ({node.right.reward}) - orientation: right :: parent: ({node.id})")
                 self.init_tree(node.right, current_depth+1)
         
         return node
@@ -62,12 +65,15 @@ class BinaryTree:
         iter = 0
         while not self.is_terminal(root):
             iter += 1
-            print(f"ITERATION {iter}")
+            if self.print:
+                print(f"ITERATION {iter}")
+
             for i in range(0, 25):
                 root = self.traverse_snowcap(root)
 
-            print(f"left: {root.left.ucb_value}")
-            print(f"right: {root.right.ucb_value}")
+            if self.print:
+                print(f"left: {root.left.ucb_value}")
+                print(f"right: {root.right.ucb_value}")
 
             if root.left.ucb_value > root.right.ucb_value:
                 root = root.left
@@ -99,7 +105,9 @@ class BinaryTree:
         if self.is_terminal(node):
             # if self.mcts_result is None or self.mcts_result.reward < node.reward:
             self.mcts_result = node
-            print(f"BEST REWARD ---> {node.reward} <--- (all time champion: {self.mcts_result.reward})")
+            
+            if self.print:
+                print(f"BEST REWARD ---> {node.reward} <--- (all time champion: {self.mcts_result.reward})")
 
             return None
 
