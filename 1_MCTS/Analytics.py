@@ -85,10 +85,12 @@ class Analytics:
         df = pd.DataFrame(stats)
         df = df[0:repeats]
 
-        plt.figure(figsize=(16,10))
-        sns.boxplot(x='c', y='value', hue='variable', data=df_melted)
+        c_values = [i for i in stats]
+        values = [[v for k,v in stats[i].items()] for i in stats]
 
-        plt.ylim(0, 100)
+        plt.figure(figsize=(16,10))
+        sns.boxplot(x=c_values, y=values, palette="mako")
+
         plt.ylabel('Reward')
         plt.xlabel('UCB c value')
         plt.legend()

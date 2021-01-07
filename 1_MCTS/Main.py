@@ -6,7 +6,7 @@ class Main:
 
 depth = 12
 c_values = [0, 0.01, 0.05, 0.1, 0.5, 1, 2, 5]
-repeats = 3
+repeats = 10
 
 statistics = {}
 
@@ -48,9 +48,9 @@ for c in c_values:
 
         avg_rank += rank_percent
 
-    statistics[c]['max'] = max_rank
-    statistics[c]['min'] = min_rank
-    statistics[c]['avg'] = avg_rank/repeats+1
+    # statistics[c]['max'] = max_rank
+    # statistics[c]['min'] = min_rank
+    # statistics[c]['avg'] = avg_rank/repeats+1
 
 print(statistics)
 
