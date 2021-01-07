@@ -28,18 +28,22 @@ agent = Agent(spawn)
 # creating grid world
 gw = GridWorld(agent, entities, dim)
 
+# Analytics class
+stats = Analytics(gw.grid)
 
 # Use Monte Carlo policy evaluation to compute the state value function v_pi(s) for the equiprobable policy pi
 # gw.montecarlo_rl(iterations=10000)
+# stats.show_heatmap(gw.grid)
 
-actions, rewards = gw.sarsa(episodes=10000)
-
-# Plot graphs and figures
-stats = Analytics(gw.grid)
-# stats.show_heatmap()
-
-stats.sarsa_lineplot(actions, rewards)
-
+# sarsa
+actions, rewards = gw.sarsa(episodes=5000)
+stats.temp_diff_lineplot(actions, algorithm='sarsa')
+stats.temp_diff_lineplot_actions_rewards(actions, rewards, algorithm='sarsa')
+# stats.temp_diff_lineplot(rewards, algorithm='sarsa')
+# qlearning
+actions, rewards = gw.qlearning(episodes=5000)
+stats.temp_diff_lineplot(actions, algorithm='qlearning')
+stats.temp_diff_lineplot_actions_rewards(actions, rewards, algorithm='qlearning')
 
 
 # manual control of agent (for testing)

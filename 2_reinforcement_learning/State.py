@@ -24,27 +24,34 @@ class State:
         if to_show == 'reward':
             cell = str(self.reward)
         elif to_show == 'q':
-            direction = max(self.q, key=lambda k: self.q[k])
-            # set print signs for readability
-            if direction == 'north':
-                sign = '^'
-            elif direction == 'south':
-                sign = 'v'
-            elif direction == 'east':
-                sign = '>'
-            elif direction == 'west':
-                sign = '<'
-                
-            cell = str(f"{sign} ({round(self.q[direction],2)})")
+            if not self.absorbing:
+                direction = max(self.q, key=lambda k: self.q[k])
+                # set print signs for readability
+                if direction == 'north':
+                    sign = '^'
+                elif direction == 'south':
+                    sign = 'v'
+                elif direction == 'east':
+                    sign = '>'
+                elif direction == 'west':
+                    sign = '<'
+                    
+                # cell = str(f"{sign}")
+                cell = str(f"{sign} ({format(self.q[direction], '.2f')})")
+
         elif to_show == 'v':
             cell = str(self.v_pi)
+
         # wall
         if not self.movable:
             cell = f"|\t|"
+
+        # terminal state
         elif self.absorbing:
-            cell = f"[{cell}]*"
+            cell = f"[ {self.reward} ]*"
 
         # agent is present
         if agent_present:
             cell = f"<{cell}>"
         return cell
+        

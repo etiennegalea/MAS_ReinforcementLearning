@@ -188,11 +188,7 @@ class GridWorld:
                 
             cell.v_pi_mean 
 
-    # def init_q_matrix(self):
-    #     q_matrix = []
-    #     for s in states
-
-    def sarsa(self, episodes=10000, lr=0.1, discount=1, epsilon=0.3, epsilon_decay=0.01):
+    def sarsa(self, episodes=4000, lr=0.005, discount=1, epsilon=0.3, epsilon_decay=0.001):
         'SARSA in combination with greedification to search for an optimal policy'
 
         def next_action_state(s, a):
@@ -213,8 +209,8 @@ class GridWorld:
             # choose action based on policy (e-greedy)
             a = self.e_greedy(s, epsilon)
 
-            # incremently decrease learning-rate per episode until threshold (0.1) is reached
-            if epsilon > 0.1:
+            # incremently decrease learning-rate per episode
+            if epsilon > epsilon_decay:
                 epsilon -= epsilon_decay
 
             actions = 0
@@ -222,39 +218,91 @@ class GridWorld:
 
             # for each step in episode (until done?)
             while True:
+                # get new state and new action
                 s_prime, reward = next_action_state(s, a)
                 a_prime = self.e_greedy(s_prime, epsilon)
-
                 # update algorithm
                 s.q[a] = s.q[a] + lr*(reward + discount*(s_prime.q[a_prime]) - s.q[a])
-
+                # replace old state and action with new (prime) state and action
                 s = s_prime
                 a = a_prime
-
+                # append actions and rewards (for analytics)
                 actions += 1
                 rewards += reward
-                
                 # repeat until reaching a terminal state
                 if s.absorbing:
                     break
 
+            # append to lists
             actions_per_episode.append(actions)
             rewards_per_episode.append(rewards)
 
-        # print current gridworld
+        # print gridworld with the preferred policies
         self.print_grid(s.pos, to_show='q')
     
         return actions_per_episode, rewards_per_episode
 
-    # def sarsa(self, s, alpha=0.1, discount=1):
-    #     'SARSA in combination with greedification to search for an optimal policy'
+
+    def qlearning(self, episodes=4000, lr=0.005, discount=1, epsilon=0.3, epsilon_decay=0.001):
+        'Q-learning to search for an optimal policy'
+
+        def next_action_state(s, a):
+            # next state determined by greedy policy (e-greedy)
+            new_pos = self.move_agent(a, s.pos)
+            s_prime = self.grid[new_pos[0]][new_pos[1]]
+
+            return s_prime, s_prime.reward
+            
+        actions_per_episode = []
+        rewards_per_episode = []
+        
+        # for each episode
+        for ep in range(0, episodes):
+            # define starting state
+            s = self.grid[0][0]
+
+            # incremently decrease learning-rate per episode
+            if epsilon > epsilon_decay:
+                epsilon -= epsilon_decay
+
+            actions = 0
+            rewards = 0
+
+            # for each step in episode (until done?)
+            while True:
+                # choose action based on policy (e-greedy)
+                a = self.e_greedy(s, epsilon)
+                # get new state and reward from action
+                s_prime, reward = next_action_state(s, a)
+                # select action with maximum value (best direction)
+                best_direction = max(s_prime.q, key=lambda k: s_prime.q[k])
+                # update algorithm
+                s.q[a] = s.q[a] + lr*(reward + discount*s_prime.q[best_direction] - s.q[a])
+                # replace old state with new (prime) state
+                s = s_prime
+                # append actions and rewards (for analytics)
+                actions += 1
+                rewards += reward
+                # repeat until reaching a terminal state
+                if s.absorbing:
+                    break
+
+            # append to lists
+            actions_per_episode.append(actions)
+            rewards_per_episode.append(rewards)
+
+        # print gridworld with the preferred policies
+        self.print_grid(s.pos, to_show='q')
+    
+        return actions_per_episode, rewards_per_episode
 
 
-    def e_greedy(self, s, epsilon=0.1):
+
+    def e_greedy(self, s, epsilon):
         'epsilon-greedy policy returning either random or greedy, depending on rate'
 
         # if random float is smaller than epsilon, greedy (0 < e < 1)
-        if random.random() < epsilon:
+        if random.random() > epsilon:
             return max(s.q, key=lambda k: s.q[k])
         else:
             # use random policy
